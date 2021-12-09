@@ -1,4 +1,4 @@
-# Podstawy Internetu rzeczy - Raspberry Pi
+# Podstawy Internetu Rzeczy - Raspberry Pi
 
 ## L09
 
