@@ -1,6 +1,8 @@
 # Podstawy Internetu Rzeczy - Raspberry Pi
 
 ## Mapa pinów Raspberry Pi uzyskana poleceniem *pinout*
+- (nn) - numery fizyczne
+- GPIOnn - numery logiczne
 
 ![img.png](img.png)
 ![img_1.png](img_1.png)
@@ -16,34 +18,34 @@ GPIO.setmode(GPIO.BCM)
 ```
 
 ### Diody
-```python
-led1 = 13
-led2 = 12
-led3 = 19
-led4 = 26
-```
+| - - nazwa - - | wartość logiczna |
+| :---: | :--------------: |
+| led1 | 13 |
+| led2 | 12 |
+| led3 | 19 |
+| led4 | 26 |
 
 ### Przyciski
-```python
-buttonRed = 5
-buttonGreen = 6
-```
+| - - nazwa - - | wartość logiczna |
+| :---: | :--------------: |
+| buttonRed | 5 |
+| buttonGreen | 6 |
 
 ### Encoder
-```python
-encoderLeft = 17
-encoderRight = 27
-```
+| - - nazwa - - | wartość logiczna |
+| :---: | :--------------: |
+| encoderLeft | 17 |
+| encoderRight | 27 |
 
 ### Buzzer
-```python
-buzzerPin = 23
-```
+| - - nazwa - - | wartość logiczna |
+| :---: | :--------------: |
+| buzzerPin | 23 |
 
 ### ws2812pin
-```python
-ws2812pin = 8
-```
+| - - nazwa - - | wartość logiczna |
+| :---: | :--------------: |
+| ws2812pin | 8 |
 
 ## L09
 
