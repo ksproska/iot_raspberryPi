@@ -1,5 +1,50 @@
 # Podstawy Internetu Rzeczy - Raspberry Pi
 
+## Mapa pinów Raspberry Pi uzyskana poleceniem *pinout*
+
+![img.png](img.png)
+![img_1.png](img_1.png)
+
+## [config.py](raspberry_pi_program_testowy/config.py)
+plik konﬁguracyjny, który zawiera podstawowe 
+informacje o mapowaniu portów I/O do obsługi urządzeń korzystających z funkcjonalności portów cyfrowych. 
+Dokonuje on też inicjalizacji protów GPIO urządzeń obsługiwanych przez te porty.
+
+Setup na podstawie wartości logicznych, nie fizycznych:
+```python
+GPIO.setmode(GPIO.BCM)
+```
+
+### Diody
+```python
+led1 = 13
+led2 = 12
+led3 = 19
+led4 = 26
+```
+
+### Przyciski
+```python
+buttonRed = 5
+buttonGreen = 6
+```
+
+### Encoder
+```python
+encoderLeft = 17
+encoderRight = 27
+```
+
+### Buzzer
+```python
+buzzerPin = 23
+```
+
+### ws2812pin
+```python
+ws2812pin = 8
+```
+
 ## L09
 
 ### [Zad1](L09/Zad1.py) - Regulacja jasności świecenia diody enkoderem
