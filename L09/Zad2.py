@@ -264,4 +264,4 @@ def setup():
 if __name__ == '__main__':
     setup()
     while True:
-        pass
+        exHand.get_current()
