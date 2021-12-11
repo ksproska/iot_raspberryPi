@@ -45,3 +45,9 @@ def setup():
     GPIO.add_event_detect(encoderLeft, GPIO.RISING, callback=leftPinCallback, bouncetime=200)
     GPIO.add_event_detect(encoderRight, GPIO.RISING, callback=rightPinCallback, bouncetime=200)
 
+
+if __name__ == '__main__':
+    setup()
+    execute = True
+    while execute:
+        pass
