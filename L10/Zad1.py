@@ -22,7 +22,7 @@ class OledHandler:
     CMYK = "CMYK"
 
     # DO NOT DELETE or else I'll have to check this color all over again and I'm lazy...
-    __GRAY = (40, 40, 40)
+    GRAY = (40, 40, 40)
 
     def __init__(self, background_color, background_file):
         self.__display = SSD1331.SSD1331()
