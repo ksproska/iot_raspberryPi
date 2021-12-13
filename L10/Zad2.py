@@ -1,3 +1,5 @@
+import datetime
+
 from ..raspberry_pi_program_testowy.config import *
 import RPi.GPIO as GPIO
 import time
@@ -96,7 +98,28 @@ class LedController:
 
 class RFIDHandler:
     def __init__(self):
-        pass
+        self.MIFAREReader = MFRC522()
+        self.start_time = None
+        self.is_being_sensed = False
+
+    def read(self):
+        (status, TagType) = self.MIFAREReader.MFRC522_Request(self.MIFAREReader.PICC_REQIDL)
+        if status == self.MIFAREReader.MI_OK:
+            (status, uid) = self.MIFAREReader.MFRC522_Anticoll()
+            if status == self.MIFAREReader.MI_OK:
+                new_time = datetime.datetime.now()
+                if not self.is_being_sensed:
+                    self.is_being_sensed = True
+                    self.start_time = new_time
+                    return True
+            else:
+                self.is_being_sensed = False
+        else:
+            self.is_being_sensed = False
+        return False
+
+    def __str__(self):
+        print(f'Is card sensed: {self.is_being_sensed}; Last card read time: {PrettyDate.to_str(self.start_time)}')
 
 
 
