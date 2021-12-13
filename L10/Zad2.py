@@ -3,11 +3,22 @@ import datetime
 from ..raspberry_pi_program_testowy.config import *
 import RPi.GPIO as GPIO
 import time
+from datetime import datetime
 import neopixel
 import board
 import busio
 import w1thermsensor
 import adafruit_bme280.advanced as adafruit_bme280
+from mfrc522 import MFRC522
+
+
+class PrettyDate:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def to_str(ms):
+        return f'{ms.hour}:{ms.minute}:{ms.second},{ms.microsecond}'
 
 
 class Color:
@@ -28,6 +39,7 @@ class Color:
     teal = (0, 128, 128)
     navy = (0, 0, 128)
     orange = (255, 128, 0)
+
 
 
 class LedController:
@@ -93,6 +105,7 @@ class LedController:
         self.__colors[7].color = Color.purple
 
     def rainbow(self):
+        self.set_rainbow()
         self.update_all()
 
 
@@ -122,5 +135,30 @@ class RFIDHandler:
         print(f'Is card sensed: {self.is_being_sensed}; Last card read time: {PrettyDate.to_str(self.start_time)}')
 
 
+class ExerciseHandler:
+    def __init__(self):
+        self.rfidh = RFIDHandler()
+        self.oled = LedController()
+        self.signal_time_period = 1
+
+    def buzzer(self, state):
+        GPIO.output(buzzerPin, not state)
+
+    def run(self):
+        was_read_successful = self.rfidh.read()
+        if was_read_successful:
+            print(self.rfidh)
+            self.buzzer(True)
+            self.oled.rainbow()
+
+        if self.rfidh.start_time + self.signal_time_period < datetime.datetime.now():
+            self.buzzer(False)
+
+        if not self.rfidh.is_being_sensed:
+            self.oled.set_color_all(Color.black)
 
 
+if __name__ == '__main__':
+    exh = ExerciseHandler()
+    while True:
+        exh.run()
