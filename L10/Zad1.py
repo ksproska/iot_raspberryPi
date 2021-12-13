@@ -21,15 +21,25 @@ class OledHandler:
     RGBA = "RGBA"
     CMYK = "CMYK"
 
-    __WHITE = (255, 255, 255)
+    # DO NOT DELETE or else I'll have to check this color all over again and I'm lazy...
     __GRAY = (40, 40, 40)
 
-    def __init__(self, background_file="images/background_dark.png"):
+    def __init__(self, background_color, background_file):
         self.__display = SSD1331.SSD1331()
         self.__display.Init()
         self.__display.clear()
         self.__background = Image.open(background_file)
         self.__printer = ImageDraw.Draw(self.__background)
+        self.__background_color = background_color
+
+    def show(self):
+        self.__display.ShowImage(self.__background)
+
+    def clear(self):
+        self.__display.clear()
+
+    def reset(self):
+        self.__display.reset()
 
     @property
     def width(self):
@@ -40,33 +50,49 @@ class OledHandler:
         return self.__display.height
 
     # PRINTS --------------------------------------------------------
+    def __base_print(self, xy, text, color=None, font=Font.ARIAL):
+        self.__printer.text(xy, text, fill=color, font=font)
+
     def print_temperature(self, text, font=Font.ARIAL, color=None):
-        self.__printer.text((30, 3), "24 C", fill=color, font=font)
+        self.clear_temperature()
+        self.__base_print((30, 3), text, color=color, font=font)
 
     def print_humidity(self, text, font=Font.ARIAL, color=None):
-        self.__printer.text((30, 19), "24 C", fill=color, font=font)
+        self.clear_humidity()
+        self.__base_print((30, 19), text, color=color, font=font)
 
     def print_altitude(self, text, font=Font.ARIAL, color=None):
-        self.__printer.text((30, 35), "24 C", fill=color, font=font)
+        self.clear_altitude()
+        self.__base_print((30, 35), text, color=color, font=font)
 
     def print_pressure(self, text, font=Font.ARIAL, color=None):
-        self.__printer.text((30, 50), "24 C", fill=color, font=font)
+        self.clear_pressure()
+        self.__base_print((30, 50), text, color=color, font=font)
 
     # CLEAR ---------------------------------------------------------
-    def clear_temperature(self, background_color=__GRAY):
-        self.__printer.rectangle(((30, 0), (96, 20)), fill=background_color)
+    def __base_clear(self, xy):
+        self.__printer.rectangle(xy, fill=self.__background_color)
 
-    def clear_humidity(self, background_color=__GRAY):
-        self.__printer.rectangle(((30, 15), (96, 35)), fill=background_color)
+    def clear_temperature(self):
+        self.__base_clear(((30, 0), (96, 20)))
 
-    def clear_altitude(self, background_color=__GRAY):
-        self.__printer.rectangle(((30, 15), (96, 50)), fill=background_color)
+    def clear_humidity(self):
+        self.__base_clear(((30, 15), (96, 35)))
 
-    def clear_pressure(self, background_color=__GRAY):
-        self.__printer.rectangle(((30, 15), (96, 65)), fill=background_color)
+    def clear_altitude(self):
+        self.__base_clear(((30, 30), (96, 50)))
+
+    def clear_pressure(self):
+        self.__base_clear(((30, 45), (96, 65)))
 
 
 class OutsideWorldHandler:
+
+    TEMPERATURE_DELTA = 0.1
+    HUMIDITY_DELTA = 0.1
+    ALTITUDE_DELTA = 0.1
+    PRESSURE_DELTA = 1
+
     def __init__(self):
         i2c = busio.I2C(board.SCL, board.SDA)
         self.__sensor = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
@@ -96,3 +122,20 @@ class OutsideWorldHandler:
     @property
     def humidity(self):
         return self.__sensor.humidity
+
+
+class ExerciseHandler:
+    def __init__(self):
+        pass
+
+
+def setup():
+    pass
+
+if __name__ == '__main__':
+    setup()
+    while True:
+        pass
+
+
+

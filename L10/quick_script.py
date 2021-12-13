@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # draw.rectangle(((30, 0), (96, 20)), fill=GRAY)
     # draw.rectangle(((30, 15), (96, 35)), fill=GRAY)
     # draw.rectangle(((30, 30), (96, 50)), fill=GRAY)
-    draw.rectangle(((30, 45), (96, 65)), fill=GRAY)
+    # draw.rectangle(((30, 45), (96, 65)), fill=GRAY)
 
     img.show()
 
