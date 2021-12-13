@@ -50,49 +50,15 @@ class OledHandler:
         return self.__display.height
 
     # PRINTS --------------------------------------------------------
-    def __base_print(self, xy, text, color=None, font=Font.ARIAL):
+    def base_print(self, xy, text, color=None, font=Font.ARIAL):
         self.__printer.text(xy, text, fill=color, font=font)
 
-    def print_temperature(self, text, font=Font.ARIAL, color=None):
-        self.clear_temperature()
-        self.__base_print((30, 3), text, color=color, font=font)
-
-    def print_humidity(self, text, font=Font.ARIAL, color=None):
-        self.clear_humidity()
-        self.__base_print((30, 19), text, color=color, font=font)
-
-    def print_altitude(self, text, font=Font.ARIAL, color=None):
-        self.clear_altitude()
-        self.__base_print((30, 35), text, color=color, font=font)
-
-    def print_pressure(self, text, font=Font.ARIAL, color=None):
-        self.clear_pressure()
-        self.__base_print((30, 50), text, color=color, font=font)
-
     # CLEAR ---------------------------------------------------------
-    def __base_clear(self, xy):
+    def base_clear(self, xy):
         self.__printer.rectangle(xy, fill=self.__background_color)
-
-    def clear_temperature(self):
-        self.__base_clear(((30, 0), (96, 20)))
-
-    def clear_humidity(self):
-        self.__base_clear(((30, 15), (96, 35)))
-
-    def clear_altitude(self):
-        self.__base_clear(((30, 30), (96, 50)))
-
-    def clear_pressure(self):
-        self.__base_clear(((30, 45), (96, 65)))
 
 
 class OutsideWorldHandler:
-
-    TEMPERATURE_DELTA = 0.1
-    HUMIDITY_DELTA = 0.1
-    ALTITUDE_DELTA = 0.1
-    PRESSURE_DELTA = 1
-
     def __init__(self):
         i2c = busio.I2C(board.SCL, board.SDA)
         self.__sensor = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
@@ -107,35 +73,88 @@ class OutsideWorldHandler:
         self.__sensor.overscan_humidity = adafruit_bme280.OVERSCAN_X1
         self.__sensor.overscan_temperature = adafruit_bme280.OVERSCAN_X2
 
-    @property
     def temperature(self):
         return self.__thermometer.get_temperature()
 
-    @property
     def altitude(self):
         return self.__sensor.altitude
 
-    @property
     def pressure(self):
         return self.__sensor.pressure
 
-    @property
     def humidity(self):
         return self.__sensor.humidity
 
 
 class ExerciseHandler:
+    TEMPERATURE_DELTA = 0.1
+    HUMIDITY_DELTA = 0.1
+    ALTITUDE_DELTA = 0.1
+    PRESSURE_DELTA = 1
+    PIXEL_RIGHT = 30
+    MAX_RIGHT = 96
+
     def __init__(self):
-        pass
+        self.oled_handler = OledHandler(OledHandler.GRAY, "images/background_dark.png")
+        self.outside_world_handler = OutsideWorldHandler()
+        self.all_handlers = \
+            [
+                self.SensorHandler(self.oled_handler, self.outside_world_handler.temperature,
+                                   (self.PIXEL_RIGHT, 3),
+                                   ((self.PIXEL_RIGHT, 0), (self.MAX_RIGHT, 20)),
+                                   self.TEMPERATURE_DELTA, 'Temp:', 'C'),
+                self.SensorHandler(self.oled_handler, self.outside_world_handler.humidity,
+                                   (self.PIXEL_RIGHT, 19),
+                                   ((self.PIXEL_RIGHT, 15), (self.MAX_RIGHT, 35)),
+                                   self.HUMIDITY_DELTA, 'Hum:', '%'),
+                self.SensorHandler(self.oled_handler, self.outside_world_handler.altitude,
+                                   (self.PIXEL_RIGHT, 35),
+                                   ((self.PIXEL_RIGHT, 30), (self.MAX_RIGHT, 50)),
+                                   self.ALTITUDE_DELTA, 'Alt:', 'm'),
+                self.SensorHandler(self.oled_handler, self.outside_world_handler.pressure,
+                                   (self.PIXEL_RIGHT, 50),
+                                   ((self.PIXEL_RIGHT, 45), (self.MAX_RIGHT, 65)),
+                                   self.PRESSURE_DELTA, 'Press:', 'hPa')
+            ]
 
+    class SensorHandler:
+        def __init__(self, oled_handler, accessor, pixel_tuple, clear_tuple, value_delta, extra_text, si_unit):
+            self.oled_handler = oled_handler
+            self.current_value = accessor()
+            self.value_delta = value_delta
+            self.accessor = accessor
+            self.print_tuple = pixel_tuple
+            self.clear_tuple_of_tuples = clear_tuple
+            self.extra_text = extra_text
+            self.si_unit = si_unit
 
-def setup():
-    pass
+        def conditioned_print(self, font=Font.ARIAL, color=None):
+            new_value = self.accessor()
+            if abs(self.current_value - new_value) > self.value_delta:
+                self.current_value = new_value
+                self.print(font, color)
+
+        def print(self, font=Font.ARIAL, color=None):
+            self.clearer()
+            text = f'{self.extra_text} {round(self.current_value, 1)} {self.si_unit}'
+            self.oled_handler.base_print(self.print_tuple, text, color=color, font=font)
+
+        def clearer(self):
+            self.oled_handler.base_clear(self.clear_tuple_of_tuples)
+
+    def first_print_all(self):
+        for handler in self.all_handlers:
+            handler.print()
+        self.oled_handler.show()
+
+    def print_all(self):
+        for handler in self.all_handlers:
+            handler.conditioned_print()
+        self.oled_handler.show()
+
 
 if __name__ == '__main__':
-    setup()
+    exercise_handler = ExerciseHandler()
+    exercise_handler.first_print_all()
     while True:
-        pass
-
-
-
+        exercise_handler.print_all()
