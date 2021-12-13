@@ -15,11 +15,13 @@ class MyDiode:
 
     def increase_led(self):
         self.current_duty_cycle = min(100, self.current_duty_cycle + MyDiode.CHANGE_VAL)
-        self.diode.ChangeDutyCicle(self.current_duty_cycle)
+        print(f'In: {self.current_duty_cycle}')
+        self.diode.ChangeDutyCycle(self.current_duty_cycle)
 
     def decrease_led(self):
         self.current_duty_cycle = max(0, self.current_duty_cycle - MyDiode.CHANGE_VAL)
-        self.diode.ChangeDutyCicle(self.current_duty_cycle)
+        print(f'De: {self.current_duty_cycle}')
+        self.diode.ChangeDutyCycle(self.current_duty_cycle)
 
     def stop(self):
         self.diode.stop()
@@ -42,8 +44,8 @@ def rightPinCallback(channel):
 
 def setup():
     my_diode.start()
-    GPIO.add_event_detect(encoderLeft, GPIO.RISING, callback=leftPinCallback, bouncetime=200)
-    GPIO.add_event_detect(encoderRight, GPIO.RISING, callback=rightPinCallback, bouncetime=200)
+    GPIO.add_event_detect(encoderLeft, GPIO.BOTH, callback=leftPinCallback, bouncetime=80)
+    GPIO.add_event_detect(encoderRight, GPIO.BOTH, callback=rightPinCallback, bouncetime=80)
 
 
 if __name__ == '__main__':
