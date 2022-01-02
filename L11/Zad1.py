@@ -1,10 +1,9 @@
 import sqlite3
 import time
 import os
-from mfrc522 import MFRC522
-import neopixel
-import board
+#from mfrc522 import MFRC522
 import paho.mqtt.client as mqtt
+import tkinter
 
 
 class Color:
@@ -27,58 +26,25 @@ class Color:
     ORANGE = (255, 128, 0)
 
 
-class LedController:
-    class InnerColor:
-        def __init__(self, r, g, b, brightness):
-            self.r = r
-            self.g = g
-            self.b = b
-            self.brightness = brightness
+class MFRC522:
 
-        @classmethod
-        def black(cls):
-            return cls(*Color.BLACK, 1)
+    class MIFAREReader:
+        PICC_REQIDL = "pic_reqidl"
 
-        @property
-        def color(self):
-            return int(self.r * self.brightness), int(self.g * self.brightness), int(self.b * self.brightness)
+        def __init__(self):
+            pass
 
-        @color.setter
-        def color(self, color_tuple):
-            self.r, self.g, self.b = color_tuple
+    MI_OK = 0
+    MI_ERR = 1
 
-    def __init__(self, brightness=1.0 / 32, auto_write=False):
-        self.__pixels = neopixel.NeoPixel(board.D18, 8, brightness=brightness, auto_write=auto_write)
-        self.__colors = [self.InnerColor.black() for _ in range(8)]
-        self.update_all()
+    def __init__(self, successful=False):
+        self.successful = successful
 
-    def update_all(self):
-        for inx in range(len(self.__colors)):
-            self.__pixels[inx] = self.__colors[inx].color
-        self.__pixels.show()
+    def MFRC552_Request(self, arg: MIFAREReader):
+        return self.MI_OK if self.successful else self.MI_ERR, "tagType"
 
-    def set_color_all(self, color_tuple):
-        for color in self.__colors:
-            color.color = color_tuple
-        self.update_all()
-
-    def clear(self):
-        self.set_color_all(Color.BLACK)
-        self.update_all()
-
-    def set_rainbow(self):
-        self.__colors[0].color = Color.RED
-        self.__colors[1].color = Color.ORANGE
-        self.__colors[2].color = Color.YELLOW
-        self.__colors[3].color = Color.LIME
-        self.__colors[4].color = Color.GREEN
-        self.__colors[5].color = Color.CYAN
-        self.__colors[6].color = Color.BLUE
-        self.__colors[7].color = Color.PURPLE
-
-    def rainbow(self):
-        self.set_rainbow()
-        self.update_all()
+    def MFMFRC522_Anticoll(self):
+        return self.MI_OK if self.successful else self.MI_ERR, "uid"
 
 
 class RFIDHandler:
@@ -99,6 +65,7 @@ class Messenger:
     def __init__(self):
         self.broker = 'localhost'
         self.client = mqtt.Client()
+        self.window = tkinter.Tk()
 
     def connect_to_broker(self):
         self.client.connect(self.broker)
@@ -107,9 +74,8 @@ class Messenger:
         self.client.disconnect(self.broker)
 
     def run(self):
-        self.connect_to_broker()
-        while True:
-            pass
+        #self.connect_to_broker()
+        self.window.geometry("300x200")
 
 
 class Sender(Messenger):
@@ -118,6 +84,15 @@ class Sender(Messenger):
 
     def publish(self, card_id, log_time):
         self.client.publish('Card used', card_id + '#' + log_time)
+
+    def run(self):
+        super().run()
+        self.client.connect(self.broker)
+        self.window.title("SENDER")
+        button_attach = tkinter.Button(self.window, text="ATTACH CARD")
+        button_attach.grid(row=0, column=0)
+        self.window.mainloop()
+        self.disconnect_from_broker()
 
 
 class Receiver(Messenger):
@@ -138,3 +113,6 @@ class ExerciseHandler:
     pass
 
 
+if __name__ == '__main__':
+    sender = Sender()
+    sender.run()
