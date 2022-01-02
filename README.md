@@ -77,3 +77,16 @@ tą kartę i rejestrował dokładny czas jej przyłożenia do czytnika. Zadbaj, 
 jednokrotnie, była zarejestrowana jeden raz, niezależnie jak długo pozostawała przyłożona do 
 czytnika. O fakcie zarejestrowania przyłożenia karty poinformuj sygnałem dźwiękowym
 z buzzera i wizualnym, na przykład, diodami programowalnymi LED WS2812.
+
+## L11
+
+### [Zad1](L11/Zad1.py) - Implementacja protokołu MQTT do przekazywania informacji o zdarzeniach związanych z użyciem karty RFID
+
+Proszę przygotować zestaw dwóch programów wykorzystujących protokół MQTT do komunikacji między sobą.
+Pierwszy to program obsługujący czytnik kart RFID. Program ten, jako wydawca (publisher) protokołu MQTT, będzie
+wysyłał informację o identyﬁkatorze użytej karty i dokładnym czasie jej użycia. Proszę zadbać, aby karta RFID przyłożona
+do czytnika była odczytywana jeden raz, jeśli jest stale przyłożona do czytnika. Proszę sygnałem dźwiękowym i wizualnym
+poinformować użytkownika karty, że została ona odczytana.
+Drugi program to klient, który jako subskrybent protokołu MQTT będzie odbierał informacje o użyciu kart RFID i zapisywał
+fakt użycia.
+Jest to zadanie przykładowe i może zostać zmodyﬁkowane lub zmienione przez Prowadzącego zajęcia laboratoryjne.
