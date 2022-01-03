@@ -70,10 +70,10 @@ class Messenger:
         self.window = tkinter.Tk()
 
     def connect_to_broker(self):
-        self.client.connect(self.broker)
+        self.client.connect(self.broker, 1883)
 
     def disconnect_from_broker(self):
-        self.client.disconnect(self.broker)
+        self.client.disconnect(self.broker, 1883)
 
     def run(self):
         #self.connect_to_broker()
@@ -104,11 +104,11 @@ class Sender(Messenger):
         Messenger.__init__(self)
 
     def publish(self, card_id, log_time):
-        self.client.publish('Card used', card_id + '#' + log_time)
+        self.client.publish('id/card', card_id + '#' + log_time)
 
     def run(self):
         super().run()
-        self.client.connect(self.broker, 11883)
+        self.connect_to_broker()
         # https://stackoverflow.com/questions/51347381/connection-refused-error-in-paho-mqtt-python-package
         self.disconnect_from_broker()
 
@@ -120,6 +120,8 @@ class Receiver(Messenger):
     def connect_to_broker(self):
         super().connect_to_broker()
         self.client.on_message = self.process_message
+        self.client.loop_forever()
+        self.client.subscribe("id/card")
 
     @staticmethod
     def process_message(client, userdata, message):

@@ -1,0 +1,1 @@
+python Zad1.py
