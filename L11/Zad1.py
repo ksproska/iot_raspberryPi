@@ -1,7 +1,10 @@
+import datetime
 import sqlite3
 import time
 import os
 #from mfrc522 import MFRC522
+from threading import Thread
+
 import paho.mqtt.client as mqtt
 import tkinter
 
@@ -27,24 +30,22 @@ class Color:
 
 
 class MFRC522:
-
-    class MIFAREReader:
-        PICC_REQIDL = "pic_reqidl"
-
-        def __init__(self):
-            pass
-
+    PICC_REQIDL = "pic_reqidl"
     MI_OK = 0
     MI_ERR = 1
 
     def __init__(self, successful=False):
         self.successful = successful
 
-    def MFRC552_Request(self, arg: MIFAREReader):
-        return self.MI_OK if self.successful else self.MI_ERR, "tagType"
+    def MFRC522_Request(self, arg):
+        if self.successful:
+            return self.MI_OK, "exampleTag"
+        return self.MI_ERR, "exampleTag"
 
-    def MFMFRC522_Anticoll(self):
-        return self.MI_OK if self.successful else self.MI_ERR, "uid"
+    def MFRC522_Anticoll(self):
+        if self.successful:
+            return self.MI_OK, "exampleUid"
+        return self.MI_ERR, "exampleUid"
 
 
 class RFIDHandler:
@@ -58,7 +59,8 @@ class RFIDHandler:
         if status == self.MIFAREReader.MI_OK:
             (status, uid) = self.MIFAREReader.MFRC522_Anticoll()
             if status == self.MIFAREReader.MI_OK:
-                pass
+                return uid
+        return None
 
 
 class Messenger:
@@ -79,7 +81,26 @@ class Messenger:
 
 
 class Sender(Messenger):
-    def __init__(self):
+    class Window:
+        def __init__(self, mfrc: MFRC522):
+            self.mfrc = mfrc
+            window = tkinter.Tk()
+            window.title("SENDER")
+
+            def set_success(succ=True):
+                print(succ)
+                mfrc.successful = succ
+
+            button_attach = tkinter.Button(window, text="ATTACH CARD"
+                                           # , command=lambda event=None: self.card_reader.successful
+                                           )
+            button_attach.bind('<ButtonPress-1>', lambda event=None, succ=True: set_success(succ))
+            button_attach.bind('<ButtonRelease-1>', lambda event=None, succ=False: set_success(succ))
+            button_attach.grid(row=0, column=0)
+            window.mainloop()
+
+    def __init__(self, card_handler):
+        self.card_handler = card_handler
         Messenger.__init__(self)
 
     def publish(self, card_id, log_time):
@@ -87,11 +108,8 @@ class Sender(Messenger):
 
     def run(self):
         super().run()
-        self.client.connect(self.broker)
-        self.window.title("SENDER")
-        button_attach = tkinter.Button(self.window, text="ATTACH CARD")
-        button_attach.grid(row=0, column=0)
-        self.window.mainloop()
+        self.client.connect(self.broker, 11883)
+        # https://stackoverflow.com/questions/51347381/connection-refused-error-in-paho-mqtt-python-package
         self.disconnect_from_broker()
 
 
@@ -114,5 +132,18 @@ class ExerciseHandler:
 
 
 if __name__ == '__main__':
-    sender = Sender()
+    card_handler = RFIDHandler()
+    sender = Sender(card_handler)
+    Thread(target=lambda: Sender.Window(card_handler.MIFAREReader)).start()
+
     sender.run()
+    while True:
+        log_time = datetime.datetime.now()
+        read = card_handler.read()
+        print(f'{datetime.datetime.now()} - {read}')
+        if read is not None:
+            print('imagine light and sound...')
+            sender.publish(read, f'{log_time.hour}:{log_time.minute}:{log_time.second},{log_time.microsecond}')
+
+        time.sleep(0.5)
+
