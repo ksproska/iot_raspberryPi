@@ -51,15 +51,19 @@ class MFRC522:
 class RFIDHandler:
     def __init__(self):
         self.MIFAREReader = MFRC522()
-        self.start_time = None
-        self.is_being_sensed = False
+        self.was_read = False
 
     def read(self):
         (status, TagType) = self.MIFAREReader.MFRC522_Request(self.MIFAREReader.PICC_REQIDL)
         if status == self.MIFAREReader.MI_OK:
             (status, uid) = self.MIFAREReader.MFRC522_Anticoll()
             if status == self.MIFAREReader.MI_OK:
-                return uid
+                if not self.was_read:
+                    self.was_read = True
+                    return uid
+                return None
+        else:
+            self.was_read = False
         return None
 
 
