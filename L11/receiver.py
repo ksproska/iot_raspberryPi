@@ -73,7 +73,7 @@ def create_main_window():
 
 def connect_to_broker():
     # Connect to the broker.
-    client.connect(broker)
+    client.connect(broker, port=1883)
     # Send message about conenction.
     client.on_message = process_message
     # Starts client and subscribe.

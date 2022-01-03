@@ -51,7 +51,7 @@ def create_main_window():
 
 def connect_to_broker():
     # Connect to the broker.
-    client.connect(broker, port=2137)
+    client.connect(broker, port=1883)
     # Send message about conenction.
     call_worker("Client connected")
 

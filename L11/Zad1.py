@@ -67,7 +67,6 @@ class Messenger:
     def __init__(self):
         self.broker = 'localhost'
         self.client = mqtt.Client()
-        self.window = tkinter.Tk()
 
     def connect_to_broker(self):
         self.client.connect(self.broker, 1883)
@@ -76,8 +75,8 @@ class Messenger:
         self.client.disconnect(self.broker, 1883)
 
     def run(self):
-        #self.connect_to_broker()
-        self.window.geometry("300x200")
+        self.connect_to_broker()
+        #self.window.geometry("300x200")
 
 
 class Sender(Messenger):
