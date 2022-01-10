@@ -113,7 +113,7 @@ class Sender(Messenger):
         super().run()
         self.connect_to_broker()
         # https://stackoverflow.com/questions/51347381/connection-refused-error-in-paho-mqtt-python-package
-        self.disconnect_from_broker()
+        # self.disconnect_from_broker()
 
 
 class Receiver(Messenger):

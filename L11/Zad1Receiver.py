@@ -18,6 +18,12 @@ if __name__ == '__main__':
 
     client.on_message = on_message
     client.connect(broker)
-    client.loop_forever()
+    client.loop_start()
+    client.subscribe('id/card')
+    inp = ""
+    while inp != "exit":
+        inp = input()
+        
+    
 
 
