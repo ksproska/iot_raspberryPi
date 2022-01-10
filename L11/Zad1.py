@@ -1,4 +1,5 @@
 import datetime
+import random
 import sqlite3
 import time
 import os
@@ -44,7 +45,7 @@ class MFRC522:
 
     def MFRC522_Anticoll(self):
         if self.successful:
-            return self.MI_OK, "exampleUid"
+            return self.MI_OK, f'{random.randint(1000, 10000)}'
         return self.MI_ERR, "exampleUid"
 
 
@@ -113,7 +114,6 @@ class Sender(Messenger):
         super().run()
         self.connect_to_broker()
         # https://stackoverflow.com/questions/51347381/connection-refused-error-in-paho-mqtt-python-package
-        # self.disconnect_from_broker()
 
 
 class Receiver(Messenger):
@@ -123,7 +123,7 @@ class Receiver(Messenger):
     def connect_to_broker(self):
         super().connect_to_broker()
         self.client.on_message = self.process_message
-        self.client.loop_forever()
+        self.client.loop_start()
         self.client.subscribe("id/card")
 
     @staticmethod
@@ -150,5 +150,5 @@ if __name__ == '__main__':
             print('imagine light and sound...')
             sender.publish(read, f'{log_time.hour}:{log_time.minute}:{log_time.second},{log_time.microsecond}')
 
-        time.sleep(0.5)
+        time.sleep(0.1)
 

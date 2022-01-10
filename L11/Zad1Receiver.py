@@ -1,29 +1,14 @@
+import datetime
 from threading import Thread
 import tkinter
 import paho.mqtt.client as paho
 from L11.Zad1 import Receiver
 
-
+global counter
 if __name__ == '__main__':
-    # rec = Receiver()
-    # rec.connect_to_broker()
-    #w = tkinter.Tk()
-    #w.mainloop()
+    rec = Receiver()
+    rec.connect_to_broker()
 
-    client = paho.Client()
-    broker = 'localhost'
-
-    def on_message(cl, userdata, message):
-        print('It works!')
-
-    client.on_message = on_message
-    client.connect(broker)
-    client.loop_start()
-    client.subscribe('id/card')
     inp = ""
     while inp != "exit":
         inp = input()
-        
-    
-
-
