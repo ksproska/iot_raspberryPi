@@ -17,7 +17,7 @@ if __name__ == '__main__':
         print('It works!')
 
     client.on_message = on_message
-    client.connect(broker, port=1883)
+    client.connect(broker)
     client.loop_forever()
 
 

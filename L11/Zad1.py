@@ -73,10 +73,10 @@ class Messenger:
         self.client = mqtt.Client()
 
     def connect_to_broker(self):
-        self.client.connect(self.broker, 1883)
+        self.client.connect(self.broker)
 
     def disconnect_from_broker(self):
-        self.client.disconnect(self.broker, 1883)
+        self.client.disconnect(self.broker)
 
     def run(self):
         self.connect_to_broker()
