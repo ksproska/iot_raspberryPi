@@ -80,7 +80,7 @@ z buzzera i wizualnym, na przykład, diodami programowalnymi LED WS2812.
 
 ## L11
 
-### [Zad1](L11/Zad1.py) - Implementacja protokołu MQTT do przekazywania informacji o zdarzeniach związanych z użyciem karty RFID
+### [Zad1](L11/Zad1Sender.py) - Implementacja protokołu MQTT do przekazywania informacji o zdarzeniach związanych z użyciem karty RFID
 
 Proszę przygotować zestaw dwóch programów wykorzystujących protokół MQTT do komunikacji między sobą.
 Pierwszy to program obsługujący czytnik kart RFID. Program ten, jako wydawca (publisher) protokołu MQTT, będzie

@@ -1,1 +1,1 @@
-python Zad1.py
+python Zad1Sender.py
